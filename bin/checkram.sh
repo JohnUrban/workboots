@@ -1,0 +1,1 @@
+../ramcpu/checkram.sh

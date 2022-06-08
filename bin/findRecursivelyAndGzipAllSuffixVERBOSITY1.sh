@@ -1,0 +1,1 @@
+../find/findRecursivelyAndGzipAllSuffixVERBOSITY1.sh

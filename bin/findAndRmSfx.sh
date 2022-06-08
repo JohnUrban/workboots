@@ -1,0 +1,1 @@
+../find/findAndRmSfx.sh
