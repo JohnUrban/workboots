@@ -1,0 +1,6 @@
+if [ $# -eq 0 ]; then echo "scriptname DIR" ; exit ; fi
+
+
+find ${1} -type f -exec ls -l {} \;
+
+## ls -lR works too but gives dirs; and organizes weird

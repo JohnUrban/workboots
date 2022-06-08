@@ -1,0 +1,7 @@
+
+if [ $# -eq 0 ]; then echo " scriptname targetdir [human]" ; exit ; fi
+
+
+if [ $# -eq 1 ]; then find ${1} -type d -exec du -sk {} \; 
+elif [ $# -eq 2 ] ; then find ${1} -type d -exec du -skh {} \; 
+fi

@@ -1,0 +1,47 @@
+function help {
+  echo "
+	scriptname max_recursion_depth
+		max_recursion_depth = how many levels of subdirectories to explore 
+					- each level will get its own file
+					- the lists in a sublevel will be subsets of lists in levels above
+					- this just makes it slightly easier to compute total diskusage of dirs and subdirs from separated lists....
+       "
+}
+
+
+function process {
+  find ${DIR} -type f -exec ls -l {} \; > ${TMP}/${OUT}
+    ## ls -lR works too but gives dirs; and organizes weird
+  
+
+if [ $# -eq 0 ]; then help ; exit ; fi
+MAXDEP=${1}
+
+
+SEED=$RANDOM
+
+UNAME=$( uname )
+if [ $UNAME == "Linux" ]; then 
+  DATE=$( date | awk '{print $2"-"$3"-"$4}' )
+elif [ $UNAME == "Darwin" ]; then
+  DATE=$( date | awk '{print $3"-"$2"-"$(NF)}' )
+else
+  DATE=today
+fi
+
+TMP=tmpdir_listfiles_${DATE}_${SEED}
+
+mkdir -p ${TMP}
+
+find . -maxdepth ${MAXDEP} -type d | awk 'NR>1 {sub("./",""); print}' > ${TMP}/dirs.fofn
+
+while read DIR ; do 
+  if [ -d ${DIR} ]; then
+    OUT=$( echo ${DIR} | awk '{gsub("/","___"); print $1".list.txt"}' )
+    find ${DIR} -type f -exec ls -l {} \; > ${TMP}/${OUT} &
+    ## ls -lR works too but gives dirs; and organizes weird
+  fi
+done < ${TMP}/dirs.fofn
+wait
+
+

@@ -1,0 +1,27 @@
+#!/bin/bash
+## Usage: scriptname directory-or-file-name
+
+
+
+SEED=$RANDOM
+
+UNAME=$( uname )
+if [ $UNAME == "Linux" ]; then 
+  DATE=$( date | awk '{print $2"-"$3"-"$4}' )
+elif [ $UNAME == "Darwin" ]; then
+  DATE=$( date | awk '{print $3"-"$2"-"$(NF)}' )
+else
+  DATE=today
+fi
+
+TMP=tmpdir_diskusage_${DATE}_${SEED}
+
+mkdir -p ${TMP}
+
+for DIR in *; do 
+  if [ -d ${DIR} ]; then
+    find ./${DIR} -type d  -exec du -sk {} \; > ${TMP}/${DIR}.txt &
+  fi
+done
+wait
+

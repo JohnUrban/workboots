@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then echo filecount pathToDirToCountFilesIn; exit; fi
+
+#ls -f $1 | wc -l
+ls -f $1 | grep -v "^\." | wc -l
+
+
+
+## ls normally sorts the list, -f tells it to turn that off
+## in dirs with large numbers of reads, this is ultra important for speed.
