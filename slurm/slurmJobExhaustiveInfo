@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then echo "
+Usage:
+slurmJob jobID
+
+Wrapper for:
+sacct -j $1 --format JobID,jobname,NTasks,nodelist,MaxVMSize,AveVMSize,MaxRSS,start,end,cputime,elapsed
+sacct -j $1 --format UserCPU,SystemCPU,TotalCPU,CPUTimeRAW
+#
+#now
+sacct -j $1 --format JobID,jobname,NTasks,nodelist
+sacct -j $1 --format MaxVMSize,AveVMSize,MaxRSS
+sacct -j $1 --format start,end,cputime,elapsed
+sacct -j $1 --format UserCPU,SystemCPU,TotalCPU,CPUTimeRAW
+"
+exit
+fi
+
+
+
+for shit in jobid,jobname,partition,maxvmsize,maxvmsizenode,NCPUS, \
+maxvmsizetask,avevmsize,maxrss,maxrssnode, \
+maxrsstask,averss,maxpages,maxpagesnode, \
+maxpagestask,avepages,mincpu,mincpunode, \
+mincputask,avecpu,ntasks,alloccpus,elapsed, \
+state,exitcode,avecpufreq,reqcpufreqmin, \
+reqcpufreqmax,reqcpufreqgov,consumedenergy, \
+maxdiskread,maxdiskreadnode,maxdiskreadtask, \
+avediskread,maxdiskwrite,maxdiskwritenode, \
+maxdiskwritetask,avediskread,allocgres,reqgres; \
+do
+echo; sacct -j $1 --format $shit ; echo
+
+done
+
+echo
+scontrol show job $1

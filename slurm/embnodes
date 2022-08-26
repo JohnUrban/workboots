@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+EMB="memex-c044|memex-c043|memex-c057|memex-c041|memex-c045"
+echo "GREP NODES"
+slurmAllq | grep -E ${EMB}
+
+echo
+
+echo "GREP EMB"
+slurmAllq | grep -i emb

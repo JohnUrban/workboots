@@ -1,0 +1,6 @@
+
+if [ $# -eq 1 ]; then
+ sacct --starttime $1 --format JobID,jobname,NTasks,nodelist,MaxVMSize,AveVMSize,MaxRSS,start,end,cputime,elapsed
+else
+ sacct --format JobID,jobname,NTasks,nodelist,MaxVMSize,AveVMSize,MaxRSS,start,end,cputime,elapsed
+fi

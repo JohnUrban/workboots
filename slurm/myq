@@ -1,0 +1,39 @@
+#!/bin/bash
+
+user=${1-"$USER"}
+format="%i\t%j\t%P\t%q\t%C\t%l"
+header="NAME\tPART.\tQOS\tCPU\tWALLTIME"
+
+bold=`tput bold`
+normal=`tput sgr0`
+
+echo "Jobs for user ${bold}$user${normal}"
+echo ""
+
+echo "${bold}Running:${normal}"
+running=`squeue -h -u $user --format="$format\t%L\t%N" -t R -S L`
+if [ -z ${running:0:1} ]; then
+	echo "(none)"
+else
+	echo -e "ID\t$header\tREMAIN\tNODES\n$running\n" | column -t
+fi
+echo ""
+
+echo "${bold}Pending:${normal}"
+pending=`squeue -h -u $user --format="$format\t%S\t%R" -t PD -S S`
+if [ -z ${pending:0:1} ]; then
+	echo "(none)"
+else
+	echo -e "ID\t$header\tEST.START\tREASON\n$pending\n" | column -t
+fi
+echo ""
+
+
+echo "${bold}Suspended:${normal}"
+running=`squeue -h -u $user --format="$format\t%L\t%N" -t S -S L`
+if [ -z ${running:0:1} ]; then
+	echo "(none)"
+else
+	echo -e "ID\t$header\tREMAIN\tNODES\n$running\n" | column -t
+fi
+echo ""

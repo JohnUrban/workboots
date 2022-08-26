@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#Bash script using sinfo from SLURM to poll cluster noders, aggregate by column filtered by type (gpu, batch, vnc, debug). Then prints data in readable format using AWK and format string, sorted by node purpose and resources.
+
+#Pull cluster information from sinfo with appropriate flags (flags avail at https://slurm.schedmd.com/sinfo.html). Pipe into awk to begin string formatting
+
+sinfo -ho "%D/%Y/%c/%7m/%40f/%F/%C/%R/%e" -N -r -S R -e | awk -F "/" '
+	#Define distinction filter for array of nodes. Fill array values for printing
+	{
+		#Sum all nodes by distinction filter
+		def = echo $14 $5 int($4/1000); #Filter string is purpose + features + available memory
+		nodes_T[def] += $1;
+		nodes_A[def] += $6+$8
+		cores_A[def] += $10+$12;
+		cores_T[def] += $13;
+		mem_T[def] += $4;
+		mem_A[def] += int($15);
+		cpu[def] = $3;
+		feat[def] = $5
+		purp[def] = $14
+	}
+	END{OFS="\t"; ORS = "\n";OFMT = "%.0f";
+	
+	#Define format for output strings
+	format = "%5s %5s %9s %6s  %-40s %8s%7s %8s%7s %8s%7s %8s\n";
+	
+	#Print headers for data
+	printf format, "NODES","CORES","CPU/NODE","MEM","Features","NODES"," IN USE","CORES"," IN USE","MEMORY"," IN USE","PURPOSE";
+        printf format, "-----","-----","--------","---","--------","-----","-------","-----","-------","------","-------","-----";
+	
+	#For each distinct entry, print data. Sort at end by purpose ( batch, debug, gpu, vnc), then subsort by # of cores
+	for (i in purp) printf format, 
+		nodes_T[i],
+		cores_T[i],
+		cpu[i]"-cores",
+		int(mem_T[i]/nodes_T[i]/1000)"GB",
+		feat[i],
+		nodes_A[i],
+		int(1000*nodes_A[i]/nodes_T[i])/10"%", #int math casting used to quickly fix precision without adjusting format string
+		cores_A[i],
+		int(1000*cores_A[i]/cores_T[i])/10"%",
+		int((mem_T[i]-mem_A[i])/1000)"GB",
+		100-int(1000*mem_A[i]/mem_T[i])/10"%",
+		purp[i] | "sort -k12 -k3"}'

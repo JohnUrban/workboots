@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then echo "
+Usage:
+slurmJob jobID
+
+Wrapper for:
+sacct -j $1 --format JobID,jobname,NTasks,nodelist,MaxVMSize,AveVMSize,MaxRSS,start,end,cputime,elapsed
+sacct -j $1 --format UserCPU,SystemCPU,TotalCPU,CPUTimeRAW
+#
+#now
+sacct -j $1 --format JobID,jobname,NTasks,nodelist
+sacct -j $1 --format MaxVMSize,AveVMSize,MaxRSS
+sacct -j $1 --format start,end,cputime,elapsed
+sacct -j $1 --format UserCPU,SystemCPU,TotalCPU,CPUTimeRAW
+"
+exit
+fi
+echo
+sacct -j $1 --format JobID,jobname,NTasks,nodelist,NCPUS
+echo
+echo
+sacct -j $1 --format MaxVMSize,AveVMSize,MaxRSS
+echo
+echo
+sacct -j $1 --format start,end,cputime,elapsed
+echo
+echo
+sacct -j $1 --format UserCPU,SystemCPU,TotalCPU,CPUTimeRAW
+echo
+scontrol show job $1

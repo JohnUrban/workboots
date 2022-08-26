@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then echo "
+Usage:
+slurmStats JobID
+"
+exit
+fi
+
+sstat --format JobID,NTasks,nodelist,MaxRSS,MaxVMSize,AveRSS,AveVMSize,AveCPU ${1}.batch
