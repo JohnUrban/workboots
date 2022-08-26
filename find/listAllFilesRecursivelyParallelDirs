@@ -10,9 +10,15 @@ function help {
 
 
 function process {
+  DIR=${1}
+  OUT=$( echo ${DIR} | awk '{gsub("/","___"); print $1".list.txt"}' )
   find ${DIR} -type f -exec ls -l {} \; > ${TMP}/${OUT}
     ## ls -lR works too but gives dirs; and organizes weird
-  
+  convertBytesToHumanReadable.sh ${TMP}/${OUT} 5 ls > ${TMP}/${OUT}.humanreadable   
+  awk '{s+=$5}END{print s}' ${TMP}/${OUT} > ${TMP}/${OUT}.sum
+  convertBytesToHumanReadable.sh ${TMP}/${OUT}.sum 1 ls > ${TMP}/${OUT}.sum.humanreadable
+  wait
+}
 
 if [ $# -eq 0 ]; then help ; exit ; fi
 MAXDEP=${1}
@@ -37,9 +43,7 @@ find . -maxdepth ${MAXDEP} -type d | awk 'NR>1 {sub("./",""); print}' > ${TMP}/d
 
 while read DIR ; do 
   if [ -d ${DIR} ]; then
-    OUT=$( echo ${DIR} | awk '{gsub("/","___"); print $1".list.txt"}' )
-    find ${DIR} -type f -exec ls -l {} \; > ${TMP}/${OUT} &
-    ## ls -lR works too but gives dirs; and organizes weird
+    process ${DIR} &
   fi
 done < ${TMP}/dirs.fofn
 wait

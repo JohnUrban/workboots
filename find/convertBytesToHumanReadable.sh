@@ -3,7 +3,8 @@
 function help {
   echo " 
 	Usage:
-		convertBytesToHumanReadable.sh filename bytescolumn
+		convertBytesToHumanReadable.sh filename bytescolumn [ls]
+			- ls = ls mode; default is du -sk mode.
 	Output:
 		human readable in first position with input columns following.
 "
